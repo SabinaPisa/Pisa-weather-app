@@ -1,21 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pisa Weather App</title>
+<title>Pisa Weather 2.0</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 </head>
 <body>
-<div class="container">
-<h1>☁️ Pisa Weather</h1>
-<div class="search-box">
-<input id="cityInput" placeholder="Shahar: Samarkand">
-<button id="searchBtn">Qidirish</button>
-</div>
-<div id="weatherCard">Yuklanmoqda...</div>
+<div class="bg"></div>
+<div class="app">
+  <h1>☁️ Pisa Weather 2.0</h1>
+  <div class="search">
+    <input id="cityInput" placeholder="Shahar: Samarqand">
+    <button id="searchBtn">🔍</button>
+  </div>
+  <div id="current" class="card"></div>
+  <h3>⏰ Soatlik</h3>
+  <div id="hourly" class="scroll"></div>
+  <h3>📅 7 kunlik</h3>
+  <div id="daily" class="daily-list"></div>
+  <p class="foot">✅ 100% ishlaydi - kalitsiz</p>
 </div>
 <script src="script.js"></script>
 </body>
-</html>
+    </html>
