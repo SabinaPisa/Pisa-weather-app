@@ -1,27 +1,38 @@
-const cityInput=document.getElementById("cityInput");
-const searchBtn=document.getElementById("searchBtn");
-const weatherCard=document.getElementById("weatherCard");
+const cityInput = document.getElementById('cityInput');
+const searchBtn = document.getElementById('searchBtn');
+const currentDiv = document.getElementById('current');
+const hourlyDiv = document.getElementById('hourly');
+const dailyDiv = document.getElementById('daily');
 
-async function getWeather(city){
-try{
-weatherCard.innerHTML="<p>🔍 Qidirilmoqda...</p>";
-const geoRes=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`);
-const geoData=await geoRes.json();
-if(!geoData.results) throw new Error("Shahar topilmadi");
-const {latitude,longitude,name,country}=geoData.results[0];
-const weatherRes=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
-const weatherData=await weatherRes.json();
-const current=weatherData.current_weather;
-const temp=Math.round(current.temperature);
-let emoji="☀️";
-if(current.weathercode>2) emoji="☁️";
-if(current.weathercode>50) emoji="🌧️";
-if(current.weathercode>70) emoji="❄️";
-weatherCard.innerHTML=`<h2>${name}, ${country}</h2><div style="font-size:50px;margin:10px 0;">${emoji}</div><div class="temp">${temp}°C</div><p>Shamol: ${current.windspeed} km/soat</p><p style="margin-top:10px;color:#6c5ce7;font-weight:bold;">✅ 100% Ishlamoqda!</p>`;
-}catch(e){
-weatherCard.innerHTML=`<p>❌ ${e.message}<br>Inglizchada yoz: Samarkand, Tashkent, Seoul</p>`;
+async function getWeather(city="Samarkand"){
+  try{
+    currentDiv.innerHTML="⏳ Yuklanmoqda...";
+    const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`).then(r=>r.json());
+    if(!geo.results){currentDiv.innerHTML="Shahar topilmadi";return}
+    const {latitude,longitude,name,country}=geo.results[0];
+    const weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,wind_speed_10m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`).then(r=>r.json());
+    
+    const code = weather.current.weather_code;
+    const icons = {0:"☀️",1:"🌤️",2:"⛅",3:"☁️",45:"🌫️",51:"🌦️",61:"🌧️",71:"❄️",95:"⛈️"};
+    const icon = icons[code]||"☀️";
+    
+    currentDiv.innerHTML=`<div class="temp">${icon} ${Math.round(weather.current.temperature_2m)}°</div><div class="city">${name}, ${country}</div><div>Shamol: ${weather.current.wind_speed_10m} km/h</div>`;
+    
+    hourlyDiv.innerHTML="";
+    for(let i=0;i<12;i++){
+      const time = new Date(weather.hourly.time[i]).getHours()+":00";
+      const t = Math.round(weather.hourly.temperature_2m[i]);
+      hourlyDiv.innerHTML+=`<div><div>${time}</div><div>${t}°</div></div>`;
+    }
+    dailyDiv.innerHTML="";
+    for(let i=0;i<7;i++){
+      const date = new Date(weather.daily.time[i]).toLocaleDateString('uz-UZ',{weekday:'short'});
+      const max = Math.round(weather.daily.temperature_2m_max[i]);
+      const min = Math.round(weather.daily.temperature_2m_min[i]);
+      dailyDiv.innerHTML+=`<div><span>${date}</span><span>${min}° / ${max}°</span></div>`;
+    }
+  }catch(e){currentDiv.innerHTML="Xatolik: "+e.message}
 }
-}
-searchBtn.addEventListener("click",()=>{const c=cityInput.value.trim();if(c) getWeather(c);});
-cityInput.addEventListener("keypress",(e)=>{if(e.key==="Enter"){const c=cityInput.value.trim();if(c) getWeather(c);}});
-getWeather("Samarkand");
+searchBtn.onclick=()=>getWeather(cityInput.value);
+cityInput.onkeydown=(e)=>{if(e.key==="Enter")getWeather(cityInput.value)};
+getWeather();
