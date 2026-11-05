@@ -1,0 +1,15 @@
+{
+  "name": "Pisa Weather",
+  "short_name": "PisaWeather",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#a8edea",
+  "theme_color": "#6c5ce7",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/6974/6974833.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
