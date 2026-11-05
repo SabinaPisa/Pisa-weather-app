@@ -3,25 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pisa Weather 2.0</title>
+<title>Pisa Weather</title>
 <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
 </head>
 <body>
-<div class="bg"></div>
-<div class="app">
-  <h1>☁️ Pisa Weather 2.0</h1>
-  <div class="search">
-    <input id="cityInput" placeholder="Shahar: Samarqand">
-    <button id="searchBtn">🔍</button>
-  </div>
-  <div id="current" class="card"></div>
-  <h3>⏰ Soatlik</h3>
-  <div id="hourly" class="scroll"></div>
-  <h3>📅 7 kunlik</h3>
-  <div id="daily" class="daily-list"></div>
-  <p class="foot">✅ 100% ishlaydi - kalitsiz</p>
+<div class="container">
+<h1>🌤️ Pisa Weather</h1>
+<div class="search">
+<input id="cityInput" placeholder="Shahar: Samarqand" value="Samarqand">
+<button onclick="getWeather()">Qidirish</button>
+</div>
+<div id="mainWeather" class="card">Yuklanmoqda...</div>
+<h3>Soatlik</h3>
+<div id="hourly" class="grid"></div>
+<h3>7 kunlik</h3>
+<div id="daily" class="grid"></div>
 </div>
 <script src="script.js"></script>
 </body>
-    </html>
+</html>
