@@ -20,7 +20,8 @@ async function getWeather(city="Samarkand"){
     
     hourlyDiv.innerHTML="";
     for(let i=0;i<12;i++){
-      const time = new Date(weather.hourly.time[i]).getHours()+":00";
+      const days = ["Yak","Dush","Sesh","Chor","Pay","Jum","Shan"];
+      const date = days[new Date(weather.daily.time[i]).getDay()];
       const t = Math.round(weather.hourly.temperature_2m[i]);
       hourlyDiv.innerHTML+=`<div><div>${time}</div><div>${t}°</div></div>`;
     }
