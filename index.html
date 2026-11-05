@@ -4,7 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pisa Weather</title>
-<link rel="stylesheet" href="style.css">
+<style>
+body{margin:0;font-family:sans-serif;background:linear-gradient(135deg,#74b9ff,#a29bfe);min-height:100vh;padding:20px;color:#2d3436}
+.container{max-width:500px;margin:auto}
+h1{text-align:center;color:white}
+.search{display:flex;gap:10px;margin:20px 0}
+.search input{flex:1;padding:12px;border-radius:12px;border:none}
+.search button{padding:12px 20px;border-radius:12px;border:none;background:white;font-weight:bold;cursor:pointer}
+.card{background:rgba(255,255,255,0.95);padding:20px;border-radius:20px;text-align:center;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:10px;margin-bottom:20px}
+.hour,.day{background:rgba(255,255,255,0.9);padding:10px;border-radius:12px;text-align:center;font-size:14px}
+</style>
 </head>
 <body>
 <div class="container">
@@ -14,11 +24,40 @@
 <button onclick="getWeather()">Qidirish</button>
 </div>
 <div id="mainWeather" class="card">Yuklanmoqda...</div>
-<h3>Soatlik</h3>
+<h3 style="color:white">Soatlik</h3>
 <div id="hourly" class="grid"></div>
-<h3>7 kunlik</h3>
+<h3 style="color:white">7 kunlik</h3>
 <div id="daily" class="grid"></div>
 </div>
-<script src="script.js"></script>
+<script>
+const daysUzb=["Yak","Dush","Sesh","Chor","Pay","Jum","Shan"];
+async function getWeather(){
+ try{
+  const city=document.getElementById('cityInput').value||"Samarqand";
+  const res=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+  const geo=await res.json();
+  if(!geo.results){alert("Topilmadi");return;}
+  const {latitude,longitude,name,country}=geo.results[0];
+  const wRes=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+  const data=await wRes.json();
+  document.getElementById('mainWeather').innerHTML=`<h2>${Math.round(data.current.temperature_2m)}° ${name}</h2><p>${name}, ${country}</p><p>${Math.round(data.daily.temperature_2m_min[0])}° / ${Math.round(data.daily.temperature_2m_max[0])}°</p>`;
+  let hHtml="";
+  for(let i=0;i<24;i+=3){
+   if(!data.hourly.time[i])continue;
+   const t=new Date(data.hourly.time[i]).getHours()+":00";
+   hHtml+=`<div class="hour"><div>${t}</div><b>${Math.round(data.hourly.temperature_2m[i])}°</b></div>`;
+  }
+  document.getElementById('hourly').innerHTML=hHtml;
+  let dHtml="";
+  for(let i=0;i<7;i++){
+   if(!data.daily.time[i])continue;
+   const d=new Date(data.daily.time[i]);
+   dHtml+=`<div class="day"><div>${daysUzb[d.getDay()]}</div><b>${Math.round(data.daily.temperature_2m_min[i])}° / ${Math.round(data.daily.temperature_2m_max[i])}°</b></div>`;
+  }
+  document.getElementById('daily').innerHTML=dHtml;
+ }catch(e){console.error(e);document.getElementById('mainWeather').innerHTML="Xato: "+e.message;}
+}
+getWeather();
+</script>
 </body>
-</html>
+  </html>
